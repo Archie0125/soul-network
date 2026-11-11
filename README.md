@@ -6,7 +6,9 @@ Every person has an AI secretary. When a request needs several people, Soul Netw
 
 > **Status:** prototype built at c0mpiled-18 Taipei on 2026-11-11. The product is in planning. All data in this repo is fictional; only roles appear, never people.
 
-**Demo video (89 s):** [`media/soul-network-demo.mp4`](media/soul-network-demo.mp4)
+**Demo video (89 s):** [watch on YouTube](https://www.youtube.com/watch?v=h6or_s2vEaQ) · [download mp4](media/soul-network-demo.mp4)
+
+[![Soul Network demo video](https://img.youtube.com/vi/h6or_s2vEaQ/hqdefault.jpg)](https://www.youtube.com/watch?v=h6or_s2vEaQ)
 
 ---
 
@@ -177,7 +179,7 @@ Or open `slides.html` directly. Keys: `Space` play / pause, `←` `→` previous
 | `soul.js` | Routing, masks, hashes, collaboration and permission matrices |
 | `view.js` | Heatmap renderer |
 | `slides.html` | The 90-second walkthrough, computed live |
-| `media/soul-network-demo.mp4` | The submitted demo video |
+| `media/soul-network-demo.mp4` | The submitted demo video, also on [YouTube](https://www.youtube.com/watch?v=h6or_s2vEaQ) |
 
 ## Thanks
 
