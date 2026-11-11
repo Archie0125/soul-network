@@ -1,0 +1,252 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Soul Network</title>
+<style>
+  :root { --bg:#0b0f17; --panel:#141a26; --line:#263042; --ink:#e8edf5; --mute:#8b97ab; --acc:#5eead4; --acc2:#a78bfa; --warn:#fbbf24; }
+  * { box-sizing:border-box; margin:0; }
+  html, body { height:100%; background:#000; color:var(--ink); font-family: Inter, "Segoe UI", system-ui, sans-serif; overflow:hidden; }
+  #stage { position:absolute; width:1600px; height:900px; left:50%; top:50%; transform-origin:center; background:var(--bg); overflow:hidden; }
+  .slide { position:absolute; inset:0; padding:70px 90px 150px; opacity:0; transition:opacity .5s; pointer-events:none; }
+  .slide.on { opacity:1; }
+  h1 { font-size:110px; letter-spacing:-3px; font-weight:800; }
+  h2 { font-size:52px; font-weight:750; letter-spacing:-1px; margin-bottom:30px; }
+  .sub { font-size:40px; color:var(--mute); margin-top:14px; }
+  .badge { display:inline-block; margin-top:40px; padding:12px 22px; border:2px solid var(--acc); color:var(--acc); border-radius:999px; font-size:26px; font-weight:600; }
+  .track { position:absolute; right:90px; top:70px; color:var(--mute); font-size:24px; }
+  .mark { position:absolute; right:90px; bottom:150px; color:var(--warn); font-size:20px; letter-spacing:3px; font-weight:700; opacity:.8; }
+  .row { display:flex; gap:36px; align-items:flex-start; }
+  .panel { background:var(--panel); border:1px solid var(--line); border-radius:18px; padding:22px 26px; }
+  .label { color:var(--mute); font-size:20px; letter-spacing:1px; margin-bottom:12px; }
+  .formula { font-family: "Cambria Math", "STIX Two Math", Georgia, serif; font-size:44px; color:var(--acc); }
+  .fade { opacity:0; transform:translateY(12px); transition:opacity .6s, transform .6s; }
+  .fade.in { opacity:1; transform:none; }
+  table.heat { border-collapse:separate; border-spacing:3px; font-size:15px; }
+  table.heat th { color:var(--mute); font-weight:500; padding:2px 6px; white-space:nowrap; }
+  table.heat th.rl { text-align:right; }
+  table.heat td { width:46px; height:30px; text-align:center; color:#0b0f17; font-weight:600; border-radius:5px;
+    background: color-mix(in srgb, var(--acc) calc(var(--a) * 100%), #1c2433); }
+  table.heat td.hit { outline:3px solid var(--warn); outline-offset:1px; }
+  table.big { font-size:22px; } table.big td { width:96px; height:52px; }
+  table.tiny td { width:20px; height:20px; font-size:0; border-radius:3px; }
+  table.tiny th { font-size:12px; }
+  .bars { display:flex; flex-direction:column; gap:5px; }
+  .bar { display:flex; align-items:center; gap:10px; font-size:16px; color:var(--mute); }
+  .bar i { display:block; height:18px; background:var(--acc2); border-radius:4px; transition:width .8s; }
+  .bubbles { display:grid; grid-template-columns:repeat(4, 1fr); gap:40px; margin-top:60px; }
+  .bubble { position:relative; background:var(--panel); border:1px solid var(--line); border-radius:24px; padding:34px; text-align:center; font-size:30px; }
+  .bubble small { display:block; color:var(--mute); font-size:22px; margin-top:8px; }
+  .bubble + .bubble::before { content:"×"; position:absolute; left:-34px; top:50%; transform:translateY(-50%); color:#f87171; font-size:44px; }
+  .stuck { margin-top:60px; font-size:40px; color:var(--warn); text-align:center; }
+  .field { display:flex; justify-content:space-between; gap:20px; padding:14px 18px; border-bottom:1px solid var(--line); font-size:24px; }
+  .field:last-child { border-bottom:0; }
+  .field b { color:var(--mute); font-weight:500; min-width:170px; }
+  .hidden-val { color:#3a4558; letter-spacing:2px; }
+  .grid4 { display:grid; grid-template-columns:repeat(4, 1fr); gap:22px; }
+  .role { font-size:26px; font-weight:700; margin-bottom:10px; }
+  .role-card .field { font-size:18px; flex-direction:column; gap:4px; padding:10px 6px; }
+  .role-card .field b { min-width:0; font-size:15px; }
+  .confirm { margin-top:14px; padding:12px; text-align:center; border-radius:12px; border:2px solid var(--line); color:var(--mute); font-size:20px; transition:all .4s; }
+  .confirm.done { border-color:var(--acc); color:var(--acc); background:rgba(94,234,212,.08); }
+  .receipt { font-size:18px; color:var(--acc); white-space:nowrap; }
+  .lock { font-size:22px; color:var(--warn); margin-top:12px; }
+  .ptable { border-collapse:collapse; font-size:20px; }
+  .ptable th, .ptable td { padding:8px 14px; border-bottom:1px solid var(--line); text-align:center; }
+  .ptable th { color:var(--mute); font-weight:500; }
+  .end-line { font-size:46px; font-weight:700; margin-bottom:26px; }
+  .small { color:var(--mute); font-size:22px; margin-top:40px; }
+  #cap { position:absolute; left:0; right:0; bottom:40px; text-align:center; padding:0 120px; font-size:34px; line-height:1.3; color:#fff;
+    text-shadow:0 2px 8px #000; min-height:90px; }
+  #cap span { background:rgba(0,0,0,.55); padding:4px 14px; border-radius:8px; box-decoration-break:clone; -webkit-box-decoration-break:clone; }
+  #prog { position:absolute; left:0; bottom:0; height:6px; background:var(--acc); width:0; }
+  #hint { position:absolute; inset:0; display:flex; align-items:flex-end; justify-content:center; padding-bottom:140px; font-size:28px; color:var(--mute); }
+  body.playing #hint { display:none; }
+  body.nocap #cap { display:none; }
+</style>
+</head>
+<body>
+<div id="stage">
+
+  <section class="slide" data-start="0" data-end="6" data-cap="This is Soul Network: a prototype built today. The product is in planning.">
+    <div class="track">YC Request for Startups track · c0mpiled-18 Taipei</div>
+    <div style="margin-top:150px">
+      <h1>Soul Network</h1>
+      <div class="sub">Multiplayer AI for teams</div>
+      <div class="badge">Prototype built at c0mpiled-18 · product in planning · fictional data</div>
+    </div>
+  </section>
+
+  <section class="slide" data-start="6" data-end="14" data-cap="Everyone at work has an AI, but each one works alone. Work stalls on finding the right person.">
+    <h2>Every AI works alone</h2>
+    <div class="bubbles">
+      <div class="bubble">AI<small>Patient</small></div>
+      <div class="bubble">AI<small>Front desk</small></div>
+      <div class="bubble">AI<small>Doctor</small></div>
+      <div class="bubble">AI<small>Insurer</small></div>
+    </div>
+    <div class="stuck">Who owns this? Finding the right person stalls the work.</div>
+  </section>
+
+  <section class="slide" id="s-route" data-start="14" data-end="28" data-cap="Every session becomes a vector. Stack them into a matrix, multiply by each part of a new request, and the scores show who owns each part. No one's conversations are shown.">
+    <h2>Find the owner: <span class="formula">r<sub>t</sub> = S · q<sub>t</sub></span></h2>
+    <div class="row">
+      <div class="panel fade" data-beat="0"><div class="label">S · sessions × terms</div><div id="mS"></div></div>
+      <div class="panel fade" data-beat="4.5"><div class="label">r = S · q (Travel dates)</div><div id="mR" class="bars"></div></div>
+      <div class="panel fade" data-beat="9"><div class="label">Owner per part (best session per role)</div><div id="mO"></div>
+        <div class="small" style="margin-top:14px;font-size:18px">Scores only. No conversations shown. Illustrative toy embeddings.</div></div>
+    </div>
+  </section>
+
+  <section class="slide" id="s-split" data-start="28" data-end="42" data-cap="Take healthcare. One request needs four confirmations. The AI drafts everything, then a mask splits it: patient, front desk, doctor, insurer.">
+    <h2>Split: <span class="formula">slice = M<sub>role</sub> · draft</span></h2>
+    <div class="row">
+      <div class="panel" style="flex:1.2"><div class="label">Request</div><div style="font-size:28px;margin-bottom:20px" id="req"></div>
+        <div class="label">AI draft</div><div id="draft"></div></div>
+      <div class="panel fade" data-beat="5" style="flex:1"><div class="label">Masks M<sub>role</sub> (diagonal 0/1)</div><div id="masks"></div></div>
+    </div>
+    <div class="mark">CONCEPT · FICTIONAL DATA</div>
+  </section>
+
+  <section class="slide" id="s-views" data-start="42" data-end="52" data-cap="Each confirmer sees only their own slice. No confirmer gets the full context.">
+    <h2>Each confirmer sees only their slice</h2>
+    <div class="grid4" id="views"></div>
+    <div class="mark">CONCEPT · FICTIONAL DATA</div>
+  </section>
+
+  <section class="slide" id="s-report" data-start="52" data-end="62" data-cap="Only the requester sees the whole report, with a record of which role confirmed each part, on which version.">
+    <h2>Requester view: <span class="formula">draft = Σ M<sub>role</sub> · draft</span></h2>
+    <div class="panel" id="report"></div>
+    <div class="mark">CONCEPT · FICTIONAL DATA</div>
+  </section>
+
+  <section class="slide" id="s-learn" data-start="62" data-end="76" data-cap="Every confirmation updates a collaboration matrix, a record of who works with whom, which we plan to feed back into routing. Permissions are a separate matrix. Nothing learns them. People set them.">
+    <h2>Accumulate: <span class="formula">C ← C + ΔC</span></h2>
+    <div class="row">
+      <div class="panel"><div class="label">C · collaboration (role × role)</div><div id="mC"></div></div>
+      <div class="panel"><div class="label">P · permissions</div><div id="mP"></div>
+        <div class="lock">🔒 Set by people. Never learned.</div></div>
+    </div>
+  </section>
+
+  <section class="slide" data-start="76" data-end="90" data-cap="Our first pilot is planned as a B2B2C cross-border collaboration. Thanks to NewDawn Health for inspiring this idea.">
+    <div style="margin-top:110px">
+      <div class="end-line">First pilot: planned as a B2B2C cross-border collaboration.</div>
+      <div class="end-line" style="color:var(--acc)">Thanks to NewDawn Health for inspiring this idea.</div>
+      <div class="sub">github.com/Archie0125/soul-network</div>
+      <div class="small">Independent hackathon project. Not a NewDawn Health product; no NewDawn Health data, code or systems were used.</div>
+    </div>
+  </section>
+
+  <div id="cap"></div>
+  <div id="prog"></div>
+  <div id="hint">Space: play · ← →: step · R: restart · C: captions</div>
+</div>
+
+<script src="soul.js"></script>
+<script src="view.js"></script>
+<script>
+const { ROLES, SESSIONS, SUBTASKS, VOCAB, REQUEST, DRAFT, ACTIONS, PERMISSIONS, S } = Soul;
+const TOTAL = 90;
+const { scores, owners } = Soul.route();
+const sessionLabels = SESSIONS.map((s, i) => `${s.role} #${i % 2 + 1}`);
+
+// Slide 3: real S, real r = S·q, real owner scores.
+document.getElementById('mS').innerHTML = View.heatmap(S, sessionLabels, VOCAB.map(() => ''), { cls: 'tiny', max: 1 });
+const r0 = S.map(row => row.reduce((s, x, i) => s + x * Soul.embed(SUBTASKS[0].query)[i], 0));
+document.getElementById('mR').innerHTML = r0.map((v, i) =>
+  `<div class="bar"><span style="width:130px;text-align:right">${View.esc(sessionLabels[i])}</span><i style="width:${Math.round(v * 220)}px"></i>${v.toFixed(2)}</div>`).join('');
+document.getElementById('mO').innerHTML = View.heatmap(scores, SUBTASKS.map(t => t.label), ROLES, { highlight: View.ownerCells(scores, owners, ROLES) });
+
+// Slide 4: draft and masks.
+document.getElementById('req').textContent = REQUEST;
+document.getElementById('draft').innerHTML = SUBTASKS.map(t =>
+  `<div class="field"><b>${t.label}</b><span>${View.esc(DRAFT[t.key])}</span></div>`).join('');
+const confirmers = ROLES.filter(r => r !== 'Requester');
+document.getElementById('masks').innerHTML = View.heatmap(
+  SUBTASKS.map((_, j) => confirmers.map(role => Soul.maskFor(role, owners)[j])),
+  SUBTASKS.map(t => t.label), confirmers, { max: 1, decimals: 0 });
+
+// Slide 5: each confirmer's view comes from sliceFor(); hidden fields never carry text.
+document.getElementById('views').innerHTML = confirmers.map((role, k) => {
+  const slice = Soul.sliceFor(role, owners, DRAFT);
+  return `<div class="panel role-card"><div class="role">${role}</div>${slice.map((f, j) => f
+    ? `<div class="field"><b>${f.label}</b><span>${View.esc(f.value)}</span></div>`
+    : `<div class="field"><b>${SUBTASKS[j].label}</b><span class="hidden-val">not shared</span></div>`).join('')}
+    <div class="confirm" data-confirm="${k}">Confirm</div></div>`;
+}).join('');
+
+// Slide 6: requester sees everything, each part bound to the hash of its slice.
+document.getElementById('report').innerHTML = Soul.sliceFor('Requester', owners, DRAFT).map((f, j) =>
+  `<div class="field"><b>${f.label}</b><span style="flex:1">${View.esc(f.value)}</span>
+   <span class="receipt">✓ ${owners[j]} · +${(j + 1) * 3} min · v${Soul.hash(f.value)}</span></div>`).join('');
+
+// Slide 7: C fills as each confirmation lands; P is drawn once and never written.
+const C = Soul.emptyMatrix(ROLES.length);
+const drawC = () => { document.getElementById('mC').innerHTML = View.heatmap(C, ROLES, ROLES, { max: 1, decimals: 0, cls: 'big' }); };
+drawC();
+document.getElementById('mP').innerHTML = `<table class="ptable"><tr><th></th>${ACTIONS.map(a => `<th>${a}</th>`).join('')}</tr>${
+  ROLES.map(r => `<tr><th style="text-align:right">${r}</th>${PERMISSIONS[r].map(v => `<td>${v ? '✓' : '–'}</td>`).join('')}</tr>`).join('')}</table>`;
+
+// Playback engine.
+const stage = document.getElementById('stage');
+const slides = [...document.querySelectorAll('.slide')];
+const cap = document.getElementById('cap');
+const prog = document.getElementById('prog');
+let t = 0, playing = false, last = 0, applied = 0;
+
+function fit() { const s = Math.min(innerWidth / 1600, innerHeight / 900); stage.style.transform = `translate(-50%,-50%) scale(${s})`; }
+addEventListener('resize', fit); fit();
+
+function captionAt(slide, local) {
+  const parts = slide.dataset.cap.match(/[^.!?]+[.!?]+/g) || [slide.dataset.cap];
+  const dur = slide.dataset.end - slide.dataset.start, total = parts.join('').length;
+  let acc = 0;
+  for (const p of parts) { acc += p.length / total * dur; if (local < acc) return p.trim(); }
+  return parts[parts.length - 1].trim();
+}
+
+function render() {
+  const idx = Math.max(0, slides.findIndex(s => t >= +s.dataset.start && t < +s.dataset.end));
+  const cur = t >= TOTAL ? slides.length - 1 : idx;
+  slides.forEach((s, i) => s.classList.toggle('on', i === cur));
+  const s = slides[cur], local = t - s.dataset.start;
+  s.querySelectorAll('[data-beat]').forEach(el => el.classList.toggle('in', local >= +el.dataset.beat));
+  if (s.id === 's-views') s.querySelectorAll('[data-confirm]').forEach(el => {
+    const done = local >= 2 + el.dataset.confirm * 1.8;
+    el.classList.toggle('done', done); el.textContent = done ? '✓ Confirmed' : 'Confirm';
+  });
+  if (s.id === 's-learn') {
+    const want = Math.min(4, Math.floor(local / 2.5));
+    if (want !== applied) {
+      for (const row of C) row.fill(0);
+      confirmers.slice(0, want).forEach(role => Soul.recordCollaboration(C, 'Requester', role));
+      applied = want; drawC();
+    }
+  }
+  cap.innerHTML = `<span>${View.esc(captionAt(s, local))}</span>`;
+  prog.style.width = `${Math.min(100, t / TOTAL * 100)}%`;
+}
+
+function tick(now) {
+  if (playing) { t += (now - last) / 1000; if (t >= TOTAL) { t = TOTAL; playing = false; document.body.classList.remove('playing'); } }
+  last = now; render(); requestAnimationFrame(tick);
+}
+requestAnimationFrame(n => { last = n; tick(n); });
+
+const jump = d => {
+  const idx = slides.findIndex(s => t >= +s.dataset.start && t < +s.dataset.end);
+  const next = Math.min(slides.length - 1, Math.max(0, (idx < 0 ? slides.length - 1 : idx) + d));
+  t = +slides[next].dataset.start;
+};
+addEventListener('keydown', e => {
+  if (e.code === 'Space') { e.preventDefault(); if (t >= TOTAL) t = 0; playing = !playing; document.body.classList.toggle('playing', playing); }
+  if (e.key === 'ArrowRight') jump(1);
+  if (e.key === 'ArrowLeft') jump(-1);
+  if (e.key === 'r' || e.key === 'R') { t = 0; playing = false; document.body.classList.remove('playing'); }
+  if (e.key === 'c' || e.key === 'C') document.body.classList.toggle('nocap');
+});
+</script>
+</body>
+</html>
