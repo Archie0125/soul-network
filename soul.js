@@ -106,3 +106,5 @@ const Soul = (() => {
   return { ROLES, VOCAB, SESSIONS, SUBTASKS, REQUEST, DRAFT, ACTIONS, PERMISSIONS, S,
     embed, route, maskFor, sliceFor, hash, emptyMatrix, recordCollaboration };
 })();
+
+if (typeof module !== "undefined") module.exports = Soul;

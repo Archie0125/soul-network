@@ -17,3 +17,5 @@ const View = (() => {
 
   return { esc, heatmap, ownerCells };
 })();
+
+if (typeof module !== "undefined") module.exports = View;

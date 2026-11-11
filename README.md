@@ -161,13 +161,22 @@ Planned as a **B2B2C cross-border collaboration**: a business, its partner provi
 | Exceptions never end | Measure the automatable share on historical data before launching a flow |
 | Who is accountable for an automatic decision | Every automatic decision traces to the person who set the rule |
 
-## 5. Run it
+## 5. Go deeper
+
+| Document | What it answers |
+|---|---|
+| [`docs/math.md`](docs/math.md) | Every formula, in words first, with a tiny example: routing, decay, masks, team building, assignment, duplicates, drift, collaboration, permissions, privacy, model swaps |
+| [`docs/protocol.md`](docs/protocol.md) | How two AI secretaries talk: parties, five rules, message types, the consent handshake, version-bound confirmation, multi-owner steering, what never crosses the line, timeouts, settings |
+| [`docs/validation.md`](docs/validation.md) | Five levels of checking, from `node test.js` to a paid pilot, with pass bars and reporting rules |
+| [`docs/architecture.md`](docs/architecture.md) | The smallest real build: tables, row-level security, one request through the pieces |
+
+## 6. Run it
 
 No install, no network.
 
 ```bash
-python -m http.server 8000
-# open http://localhost:8000/slides.html
+node test.js                 # 19 checks on the math
+python -m http.server 8000   # then open http://localhost:8000/slides.html
 ```
 
 Or open `slides.html` directly. Keys: `Space` play / pause, `←` `→` previous / next, `R` restart, `C` captions on / off.
@@ -177,7 +186,10 @@ Or open `slides.html` directly. Keys: `Space` play / pause, `←` `→` previous
 | File | What it is |
 |---|---|
 | `soul.js` | Routing, masks, hashes, collaboration and permission matrices |
+| `algorithms.js` | Decay centroid, MMR, team coverage, assignment, duplicate groups, drift, centrality, Procrustes |
+| `test.js` | 19 checks that the code keeps the promises the docs make |
 | `view.js` | Heatmap renderer |
+| `docs/` | Math, protocol, validation, architecture |
 | `slides.html` | The 90-second walkthrough, computed live |
 | `media/soul-network-demo.mp4` | The submitted demo video, also on [YouTube](https://www.youtube.com/watch?v=h6or_s2vEaQ) |
 
