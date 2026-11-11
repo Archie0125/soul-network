@@ -1,6 +1,6 @@
 # Soul Network
 
-**Multiplayer AI for teams.** Every person has an AI secretary. When a request needs several people, Soul Network finds who owns each part, sends each person only their own slice to confirm, and gives the requester the full result with a record of who confirmed what.
+**Multiplayer AI for teams** (YC Request for Startups, Fall 2026: Multiplayer AI). Every person has an AI secretary. When a request needs several people, Soul Network finds who owns each part, sends each person only their own slice to confirm, and gives the requester the full result with a record of who confirmed what.
 
 > Status: prototype built at c0mpiled-18 Taipei (2026-11-11). The product is in planning. All data in this repo is fictional; only roles appear, never people.
 
